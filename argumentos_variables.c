@@ -38,13 +38,42 @@
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "MK64F12.h"
+#include "stdarg.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
 
 /*
  * @brief   Application entry point.
+ *
  */
+
+//después de intentar usar apuntadores no conseguí el funcionamiento correcto de ello así que termine recurriendo a stdarg
+uint32_t sum(uint8_t size_of_list, ...)
+{
+	// variable where the result of the sum is going to be
+	uint32_t Total = 0;
+	// counter to initialize the list
+	uint8_t list_counter = 0;
+
+	// type variable defined in stdarg
+	va_list Number_list;
+
+	// initializes the list for the number of summands
+	va_start(Number_list, size_of_list);
+
+	//to access all the arguments assigned to the Number_list
+	for (list_counter = 0; list_counter < size_of_list; list_counter++)
+	{
+	      Total += va_arg(Number_list, uint32_t);
+	}
+
+	//clean the memory of Number_list
+	va_end(Number_list);
+
+	return Total;
+}
+
 int main(void) {
 
   	/* Init board hardware. */
@@ -54,7 +83,10 @@ int main(void) {
   	/* Init FSL debug console. */
     BOARD_InitDebugConsole();
 
-    printf("Hello World\n");
+    uint32_t X = 0;
+
+    X=sum(4,1,2,3,4); //X Vale 10
+    X= sum(10,1,1,1,1,1,1,1,1,2,1); //X Vale 11
 
     /* Force the counter to be placed into memory. */
     volatile static int i = 0 ;
